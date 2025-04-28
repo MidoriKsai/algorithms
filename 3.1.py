@@ -1,4 +1,5 @@
 import time
+import random
 
 def bubble_sort(arr):
     n = len(arr)
@@ -11,11 +12,10 @@ def bubble_sort(arr):
 def quick_sort(arr):
     if len(arr) <= 1:
         return arr
-    main = arr[0]
-    less = [x for x in arr[1:] if x <  main]
-    more = [x for x in arr[1:] if x >=  main]
-    return quick_sort(less) + [main] + quick_sort(more)
-
+    pivot = arr[0]
+    less = [x for x in arr[1:] if x <= pivot]
+    greater = [x for x in arr[1:] if x > pivot]
+    return quick_sort(less) + [pivot] + quick_sort(greater)
 
 def counting_sort(arr, exp):
     n = len(arr)
@@ -37,34 +37,40 @@ def counting_sort(arr, exp):
     for i in range(n):
         arr[i] = output[i]
 
-
 def radix_sort(arr):
     if not arr:
         return arr
-
     min_num = min(arr)
     if min_num < 0:
         shift = -min_num
         arr = [num + shift for num in arr]
     else:
         shift = 0
-
     max_num = max(arr)
-
     exp = 1
     while max_num // exp > 0:
         counting_sort(arr, exp)
         exp *= 10
-
     if shift > 0:
         arr = [num - shift for num in arr]
-
     return arr
 
-a = [1, 5, 6, 234, 43, 31, 23, 40, 51, 60]
-b = [4545435435341, 5, 6, 234, 45463, 31, 24563, 45460, 54561, 646560]
-c = [4545, 3455, 645, 234, 45463, 31, 24563, 45460, 54561, 646560]
+def measure_time(sort_func, arr, iterations=10):
+    total_time = 0
+    for _ in range(iterations):
+        arr_copy = arr.copy()
+        start_time = time.time()
+        sort_func(arr_copy)
+        total_time += time.time() - start_time
+    return total_time / iterations
 
-print(bubble_sort(a))
-print(quick_sort(b))
-print(radix_sort(c))
+large_array = [random.randint(0, 10000) for _ in range(1000)]
+
+bubble_time = measure_time(bubble_sort, large_array)
+quick_time = measure_time(quick_sort, large_array)
+radix_time = measure_time(radix_sort, large_array)
+
+print("Большой массив (1000 элементов):")
+print(f"  Пузырьковая сортировка: {bubble_time:.6f} сек")
+print(f"  Быстрая сортировка: {quick_time:.6f} сек")
+print(f"  Поразрядная сортировка: {radix_time:.6f} сек")
